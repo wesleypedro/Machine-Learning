@@ -1,8 +1,7 @@
 import numpy as np
 
+
 # 1.a
-
-
 class univariate_linear_regression_analytical_method():
     def __init__(self):
         self.beta0 = None
@@ -27,69 +26,70 @@ class univariate_linear_regression_analytical_method():
     def predict(self, X):
         return self.beta0 + (self.beta1 * X)
 
+
 # 1.b
-
-
 class univariate_linear_regression_descending_gradient():
     def __init__(self, alpha=0.001, epochs=10):
-        self.alpha = aplha
+        self.alpha = alpha
         self.epochs = epochs
         self.w0 = 1
         self.w1 = 1
 
     def fit(self, X, y):
-        		n = len(X)
+        n = X.shape
 
-		for _ in range(self.ephocs):
-        yh = self.w1 * X + self.w0
+        for _ in range(self.epochs):
+            yh = self.w1 * X + self.w0
 
-        e = y - yh
+            e = y - yh
 
-        self.w0 = self.w0 + self.alpha * (sum(e) / n)
-        self.w1 = self.w1 + self.alpha * (sum(e * X) / n)
+            self.w0 = self.w0 + self.alpha * (sum(e) / n)
+            self.w1 = self.w1 + self.alpha * (sum(e * X) / n)
 
     def predict(self, X):
         return self.w1 * X + self.w0
+
 
 # 1.c
 class multivariate_linear_regression_analytical_method():
     def __init__(self):
         self.beta = None
-		self.ones = None
+        self.ones = None
 
-    def fit(self):
-		self.ones = np.ones(X.shape[0])
+    def fit(self, X, y):
+        self.ones = np.ones(X.shape[0])
 
-		self.X = np.column_stack(self.ones, X)
-		XTXi = np.linalg.inv(self.X.T.dot(self.X))
+        self.X = np.column_stack(self.ones, X)
+        XTXi = np.linalg.inv(self.X.T.dot(self.X))
 
-		self.beta = XTXi.dot(self.X.T).dot(y)
+        self.beta = XTXi.dot(self.X.T).dot(y)
 
-    def predict(self):
-		X = np.column_stack(self.ones, X)
-		return X.dot(self.beta)
+    def predict(self, X):
+        X = np.column_stack(self.ones, X)
+        return X.dot(self.beta)
+
 
 # 1.d
 class multivariate_linear_regression_descending_gradient():
     def __init__(self, alpha=0.001, epochs=10):
-		self.alpha = alpha
-		self.ephocs = ephocs
+        self.alpha = alpha
+        self.epochs = epochs
         self.w = None
         self.ones = None
+        self.w_pasts = []
 
-    def fit(self):
-		self.w = np.zeros(X.shape[0])
-        
+    def fit(self, X, y):
+        self.w = np.zeros(X.shape[0])
+
         self.ones = np.zeros(X.shape[0])
         self.X = np.column_stack(self.ones, X)
-        
-		for _ in range(self.ephocs):
-            self.w = self.w + 
-			yh = self.w1 * X + self.w0
 
-			e = y - yh
+        for _ in range(self.ephocs):
+            e = y - self.w.t.dot(self.X)
+            self.w = self.w + self.alpha * (sum(e * self.X) / len(e))
+            self.w_pasts.append(self.w)
 
-    def predict(self):
+    def predict(self, X):
         pass
 
 # 1.e
@@ -103,6 +103,7 @@ class multivariate_linear_regression_stochastic_descending_gradient():
     def predict(self):
         pass
 
+
 # 1.f
 class quadratic_regression_using_multiple_regression():
     def __init__(self):
@@ -113,6 +114,8 @@ class quadratic_regression_using_multiple_regression():
 
     def predict(self):
         pass
+
+
 # 1.g
 class cubic_regression_using_multiple_regression():
     def __init__(self):
@@ -124,6 +127,7 @@ class cubic_regression_using_multiple_regression():
     def predict(self):
         pass
 
+
 # 1.h
 class multivariate_regularized_linear_regression_descending_gradient():
     def __init__(self):
@@ -134,6 +138,7 @@ class multivariate_regularized_linear_regression_descending_gradient():
 
     def predict(self):
         pass
+
 
 # 2
 class functions():
