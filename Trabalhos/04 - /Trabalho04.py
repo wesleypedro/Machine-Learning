@@ -33,11 +33,14 @@ class KMeans(object):
 
     def _get_inertia(self, X, clusters_centers, labels):
         dist = list()
+        abs_dist = list()
 
         for i, data in enumerate(X):
-            dist.append(self._euclidian(data, clusters_centers[labels[i]])**2)
+            euclidian_dist = self._euclidian(data, clusters_centers[labels[i]])
+            dist.append(euclidian_dist**2)
+            abs_dist.append(euclidian_dist)
 
-        return sum(dist)
+        return sum(dist), abs_dist
 
     def _update_centroids(self, X, centroids, labels):
         new_centroids = list()
@@ -55,22 +58,37 @@ class KMeans(object):
                 new_centroids.append(centroids[i])
 
         return np.array(new_centroids)
+    
+    def _get_mean_distance(self, distances):
+        distances = np.array(distances)
+        return [np.mean(col) for col in distances.T]
 
-    def fit(self, X, y):
+    def fit(self, X):
+        _distance = list()
+        
         self.clusters_centers = self._initial_clusters(X, self._k)
 
 #         self.labels = self._get_nearest_centroid(X, self.clusters_centers)
         self.labels = self._compute_nearest(X, self.clusters_centers)
 
-        old_inertia = self._get_inertia(X, self.clusters_centers, self.labels)
+        old_inertia, abs_dist = self._get_inertia(X, self.clusters_centers, self.labels)
+        _distance.append(abs_dist)
+        
+        self.mean_distance = list()
 
         for _ in range(self._ite):
             self.clusters_centers = self._update_centroids(X, self.clusters_centers, self.labels)
             self.labels = self._compute_nearest(X, self.clusters_centers)
-            self.inertia = self._get_inertia(X, self.clusters_centers, self.labels)
+            self.inertia, abs_dist = self._get_inertia(X, self.clusters_centers, self.labels)
+            
+            _distance.append(abs_dist)
+            
             if self.inertia == old_inertia:
+                self.mean_distance = self._get_mean_distance(_distance)
                 break
             old_inertia = self.inertia
+        
+        self.mean_distance = self._get_mean_distance(_distance)
 
     def predict(self, X):
         return self._compute_nearest(X, self.clusters_centers)
@@ -122,10 +140,8 @@ class DecisionTree(object):
             num_right = num_parent.copy()
             for i in range(1, m):
                 c = int(classes[i - 1])
-                print(num_left)
-                print(c)
-                num_left[c] += 1
-                num_right[c] -= 1
+                num_left[c-1] += 1
+                num_right[c-1] -= 1
                 gini_left = 1.0 - sum((num_left[x] / i) ** 2 for x in range(self.n_classes))
                 gini_right = 1.0 - sum((num_right[x] / (m - i)) ** 2 for x in range(self.n_classes))
 
