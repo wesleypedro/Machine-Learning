@@ -201,23 +201,39 @@ class DecisionTree(object):
 
 
 class PCA(object):
-	def __init__(self, X):
-		pass
+    def __init__(self, dim):
+        self._dim = dim
 
-	def _standardization(self, X):
-		# std = sqrt(mean(abs(X - X.mean())**2))
-		std = np.std(X)
+    def _standardization(self, X):
+        mi = np.mean(X, axis=0)
+        sigma = np.sqrt(np.mean((X-mi)**2))
+        z = (X-mi)/sigma
 
-		return (X - X.mean) / std
+        return z
 
-	def _covariance_matrix(self):
-		pass
+    def _covariance_matrix(self, X):
+#         covariance = np.cov(X)
+        n = X.shape[0]
+        X_mean = np.mean(X, axis=0)
+        covariance = np.dot((X - X_mean).T, (X - X_mean)) / (n - 1)
 
-	def fit(self):
-		pass
+        return covariance
 
-	def predict(self):
-		pass
+    def fit(self, X):
+        X = self._standardization(X)
+        covariance = self._covariance_matrix(X)
+        eigenvalues, eigenvectors = np.linalg.eig(covariance)
+
+        index = (-eigenvalues).argsort()[:self._dim]
+        self.W = eigenvectors[:, index]
+        self.variance = list()
+        self.variance = np.array(self.variance)
+        for i in index:
+            self.variance = np.append(self.variance, eigenvalues[i] / eigenvalues.sum())
+
+    def transform(self, X):
+        X = self._standardization(X)
+        return (np.dot(self.W.T, X.T)).T
 
     
 class Metrics(object):
